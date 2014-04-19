@@ -7,3 +7,5 @@ Not all exceptions are properly handled as of right now, I might do that in the 
 #Todo
 - Let the user select a format and bitrate (right now it just picks the highest quality available)
 - Handle exceptions (When you do weird stuff, it might fuck up)
+- Let the user select a directory to save the file in
+- Clean up the mp4 afterwards
