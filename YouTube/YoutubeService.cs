@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -34,6 +35,10 @@ namespace YouTube
                 string title = new Regex(TITLE_PATTERN).Match(html).Groups[1].Value;
                 string description = new Regex(DESCRIPTION_PATTERN).Match(html).Groups[1].Value;
                 string thumbnailURL = new Regex(THUMBNAIL_PATTERN).Match(html).Groups[1].Value;
+
+                // Make sure that the title and description don't contain any HTML-escaped characters like &amp;
+                title = WebUtility.HtmlDecode(title);
+                description = WebUtility.HtmlDecode(description);
 
                 if (url.Contains("&")) url = url.Split('&')[0]; // If the URL contains more stuff in the query string, get rid of it
 
