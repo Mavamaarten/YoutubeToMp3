@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -59,6 +60,9 @@ namespace YouTubeDownloader.UI
             {
                 if (selectedItem.DownloadStatus != YoutubeListView.AudioItem.DownloadStatuses.NotDownloaded) continue;
 
+                var invalidChars = Path.GetInvalidFileNameChars();
+                string fixedTitle = new string(selectedItem._Audio.Title.Where(x => !invalidChars.Contains(x)).ToArray());
+
                 YoutubeDownloader youtubeDownloader = new YoutubeDownloader();
                 youtubeDownloader.OnDownloadProgressChanged += (s, e) =>
                 {
@@ -80,7 +84,7 @@ namespace YouTubeDownloader.UI
                         selectedItem.DownloadProgress = 50 + (float)((progress.Processed.TotalMinutes / progress.TotalDuration.TotalMinutes) * 50);
                     };
 
-                    FileStream fileStream = new FileStream(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + selectedItem._Audio.Title + ".mp3", FileMode.Create);
+                    FileStream fileStream = new FileStream(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + fixedTitle + ".mp3", FileMode.Create);
 
                     ffMpeg.LogReceived += async (ss, log) =>
                     {
@@ -96,7 +100,7 @@ namespace YouTubeDownloader.UI
                     };
 
                     new Thread(() => ffMpeg.ConvertMedia(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + selectedItem._Audio.Title + ".mp4",
+                        Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + fixedTitle + ".mp4",
                         "mp4",
                         fileStream,
                         "mp3",
@@ -105,7 +109,7 @@ namespace YouTubeDownloader.UI
                 };
 
                 var highestQualityAvailable = selectedItem._Audio.GetHighestQualityTuple();
-                youtubeDownloader.DownloadAudioAsync(selectedItem._Audio, highestQualityAvailable.Item1, highestQualityAvailable.Item2, Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + selectedItem._Audio.Title + ".mp4");
+                youtubeDownloader.DownloadAudioAsync(selectedItem._Audio, highestQualityAvailable.Item1, highestQualityAvailable.Item2, Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + fixedTitle + ".mp4");
             }
         }
 
