@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTubeDownloader", "YouTub
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTube", "YouTube\YouTube.csproj", "{96A09447-8403-47C5-B2C5-824D3070EDCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaylistParser", "PlaylistParser\PlaylistParser.csproj", "{53DDD701-D3C5-4685-979E-F125BF72BEF1}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{96A09447-8403-47C5-B2C5-824D3070EDCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96A09447-8403-47C5-B2C5-824D3070EDCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96A09447-8403-47C5-B2C5-824D3070EDCC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{53DDD701-D3C5-4685-979E-F125BF72BEF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{53DDD701-D3C5-4685-979E-F125BF72BEF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{53DDD701-D3C5-4685-979E-F125BF72BEF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{53DDD701-D3C5-4685-979E-F125BF72BEF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
