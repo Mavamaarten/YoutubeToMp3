@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -15,17 +17,42 @@ namespace YouTube
         private const string URL_PATTERN = "<meta property=\"og:url\" content=\"(.*)\">";
         private const string TITLE_PATTERN = "<meta property=\"og:title\" content=\"(.*)\">";
         private const string DESCRIPTION_PATTERN = "<meta property=\"og:description\" content=\"(.*)\">";
-        private const string THUMBNAIL_PATTERN = "<meta property=\"og:image\" content=\"(.*)\">";     
+        private const string THUMBNAIL_PATTERN = "<meta property=\"og:image\" content=\"(.*)\">";
 
+        //[Begin] iVision
+        private const string PLAYLIST_URL_PATTERN = "<a class=\"pl-video-title-link yt-uix-tile-link yt-uix-sessionlink  spf-link \" dir=\"ltr\" href=\"(.*)\" data-sessionlink";
+        
+        //Modified: Remove duplicate code
         public static async Task<AudioInformation> FetchAudioInformation(string URL)
         {
-            using (var http = new HttpClient())
-            {
-                string response = await http.GetStringAsync(URL);
-                return await ParseVideoFromHTML(response);
-            }
+            var videoPage = await DownloadPage(URL);
+            return await ParseVideoFromHTML(videoPage);
         }
 
+        //New: Fetches whole playlist
+        public static async Task FetchPlaylistInformation(string URL, Action<AudioInformation> onNext, Action onComplete)
+        {
+            var playlistPage = await DownloadPage(URL);
+            var matches = Regex.Matches(playlistPage, PLAYLIST_URL_PATTERN).Cast<Match>();
+
+            await Task.Run(() => Parallel.ForEach(matches, match =>
+            {
+                var link = String.Concat("https://www.youtube.com", match.Groups[1].Value);
+                var audioInfo = FetchAudioInformation(link).Result;
+                onNext(audioInfo);
+            }));
+
+            onComplete();
+        }
+
+        //New: Downloads page, (duhh)
+        private static async Task<string> DownloadPage(string URL)
+        {
+            using (var httpClient = new HttpClient())
+                return await httpClient.GetStringAsync(URL);
+        }
+        //[End]
+        
         private static async Task<AudioInformation> ParseVideoFromHTML(string html)
         {
             try
@@ -154,6 +181,5 @@ namespace YouTube
                     return false;
             }
         }
-
     }
 }

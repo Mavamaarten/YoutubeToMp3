@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace YouTube
 {
-    public class AudioInformation : IEquatable<AudioInformation>
+    public class AudioInformation : IEquatable<AudioInformation>, IComparable<AudioInformation>
     {
         public string URL { get; set; }
         public string Title { get; set; }
@@ -45,6 +45,11 @@ namespace YouTube
         public override string ToString()
         {
             return string.Format("URL: {0}\nTitle: {1}\nDescription: {2}\nKeywords: {3}\nThumbnail: {4}", URL, Title, Description, string.Join(", ", Keywords), Thumbnail);
+        }
+
+        public int CompareTo(AudioInformation other)
+        {
+            return Title.CompareTo(other.Title);
         }
     }
 }

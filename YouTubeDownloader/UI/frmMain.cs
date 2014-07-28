@@ -24,16 +24,62 @@ namespace YouTubeDownloader.UI
             addURLfromClipboard();
         }
 
+        //private async void addURLfromClipboard()
+        //{
+        //    string clipboardURL = Clipboard.GetText();
+        //    if (!clipboardURL.StartsWith("https://www.youtube.com/watch?v=")) return;
+        //    videosProcessing++;
+        //    progressbar.Enabled = true;
+        //    AudioInformation _Audio = await YoutubeService.FetchAudioInformation(clipboardURL);
+        //    if (_LstYoutubes.FindItemByVideo(_Audio) == null) _LstYoutubes.AddItem(_Audio);
+        //    videosProcessing--;
+        //    if (videosProcessing == 0) progressbar.Enabled = false;
+        //}
+
         private async void addURLfromClipboard()
         {
-            string clipboardURL = Clipboard.GetText();
-            if (!clipboardURL.StartsWith("https://www.youtube.com/watch?v=")) return;
-            videosProcessing++;
-            progressbar.Enabled = true;
-            AudioInformation _Audio = await YoutubeService.FetchAudioInformation(clipboardURL);
-            if (_LstYoutubes.FindItemByVideo(_Audio) == null) _LstYoutubes.AddItem(_Audio);
-            videosProcessing--;
-            if (videosProcessing == 0) progressbar.Enabled = false;
+            Action incrementVideoProcessing = () =>
+            {
+                Interlocked.Increment(ref videosProcessing);
+                progressbar.Invoke(new MethodInvoker(() => progressbar.Enabled = true));
+            };
+
+            Action decrementVideoProcessing = () =>
+            {
+                Interlocked.Decrement(ref videosProcessing);
+                if (videosProcessing == 0)
+                    progressbar.Invoke(new MethodInvoker(() => progressbar.Enabled = false));
+            };
+
+            Action<AudioInformation> addToList = (audioInformation) =>
+            {
+                incrementVideoProcessing();
+
+                if (_LstYoutubes.FindItemByVideo(audioInformation) == null)
+                {
+                    _LstYoutubes.AddItem(audioInformation).Checked = true;
+                }
+
+                decrementVideoProcessing();
+            };
+
+            var clipboardText = Clipboard.GetText();
+            if (clipboardText.StartsWith("https://www.youtube.com/watch?v="))
+            {
+                incrementVideoProcessing();
+
+                var audioInformation = await YoutubeService.FetchAudioInformation(clipboardText);
+                if (audioInformation != null) 
+                    addToList(audioInformation);
+
+                decrementVideoProcessing();
+            }
+            else if (clipboardText.StartsWith("https://www.youtube.com/playlist?list="))
+            {
+                incrementVideoProcessing();
+
+                await YoutubeService.FetchPlaylistInformation(clipboardText, addToList, decrementVideoProcessing);
+            }
         }
 
         private void frmMain_KeyDown(object sender, KeyEventArgs e)
@@ -113,5 +159,36 @@ namespace YouTubeDownloader.UI
             }
         }
 
+        class ValueObserver<T> : IObserver<T>
+        {
+            private readonly Action<T> _actionOnNext;
+            private readonly Action<Exception> _actionOnException;
+            private readonly Action _actionOnCompleted;
+
+            public ValueObserver(Action<T> actionOnNext = null, Action<Exception> actionOnException = null, Action actionOncompleted = null)
+            {
+                _actionOnNext = actionOnNext;
+                _actionOnException = actionOnException;
+                _actionOnCompleted = actionOncompleted;
+            }
+
+            public void OnNext(T value)
+            {
+                if (_actionOnNext != null)
+                    _actionOnNext(value);
+            }
+
+            public void OnError(Exception error)
+            {
+                if (_actionOnException != null)
+                    _actionOnException(error);
+            }
+
+            public void OnCompleted()
+            {
+                if (_actionOnCompleted != null)
+                    _actionOnCompleted();
+            }
+        }
     }
 }
