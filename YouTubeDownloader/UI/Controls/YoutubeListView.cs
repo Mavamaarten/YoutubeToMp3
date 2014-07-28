@@ -47,7 +47,7 @@ namespace YouTubeDownloader.UI.Controls
                 control.SendToBack();
         }
 
-        public void AddItem(AudioInformation _Audio)
+        public AudioItem AddItem(AudioInformation _Audio)
         {
             AudioItem Item = new AudioItem(_Audio)
             {
@@ -66,6 +66,8 @@ namespace YouTubeDownloader.UI.Controls
 
                 Sort();
             }));
+
+            return Item;
         }
 
         public void RemoveItem(AudioInformation _Audio)

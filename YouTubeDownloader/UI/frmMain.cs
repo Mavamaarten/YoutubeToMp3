@@ -56,7 +56,9 @@ namespace YouTubeDownloader.UI
                 incrementVideoProcessing();
 
                 if (_LstYoutubes.FindItemByVideo(audioInformation) == null)
-                    _LstYoutubes.AddItem(audioInformation);
+                {
+                    _LstYoutubes.AddItem(audioInformation).Checked = true;
+                }
 
                 decrementVideoProcessing();
             };
