@@ -124,7 +124,7 @@
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(500, 320);
             this.Name = "frmMain";
-            this.Text = "YouTube Downloader";
+            this.Text = "YouTube to mp3 converter";
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMain_KeyDown);
             this.ResumeLayout(false);
