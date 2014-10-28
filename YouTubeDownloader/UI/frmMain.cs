@@ -60,14 +60,14 @@ namespace YouTubeDownloader.UI
             {
                 if (selectedItem.DownloadStatus != YoutubeListView.AudioItem.DownloadStatuses.NotDownloaded) continue;
 
-                var invalidChars = Path.GetInvalidFileNameChars();
-                string fixedTitle = new string(selectedItem._Audio.Title.Where(x => !invalidChars.Contains(x)).ToArray());
+                char[] invalidChars = Path.GetInvalidFileNameChars();
+                var fixedTitle = new string(selectedItem._Audio.Title.Where(x => !invalidChars.Contains(x)).ToArray());
 
-                YoutubeDownloader youtubeDownloader = new YoutubeDownloader();
+                var youtubeDownloader = new YoutubeDownloader();
                 youtubeDownloader.OnDownloadProgressChanged += (s, e) =>
                 {
                     selectedItem.DownloadStatus = YoutubeListView.AudioItem.DownloadStatuses.Downloading;
-                    selectedItem.DownloadProgress = e.ProgressPercentage * 0.5f;
+                    selectedItem.DownloadProgress = e.ProgressPercentage*0.5f;
                 };
                 youtubeDownloader.OnDownloadFailed += (s, ex) =>
                 {
@@ -78,25 +78,20 @@ namespace YouTubeDownloader.UI
                 {
                     selectedItem.DownloadStatus = YoutubeListView.AudioItem.DownloadStatuses.Converting;
 
-                    FFMpegConverter ffMpeg = new FFMpegConverter();
-                    ffMpeg.ConvertProgress += (ss, progress) =>
-                    {
-                        selectedItem.DownloadProgress = 50 + (float)((progress.Processed.TotalMinutes / progress.TotalDuration.TotalMinutes) * 50);
-                    };
+                    var ffMpeg = new FFMpegConverter();
+                    ffMpeg.ConvertProgress += (ss, progress) => { selectedItem.DownloadProgress = 50 + (float) ((progress.Processed.TotalMinutes/progress.TotalDuration.TotalMinutes)*50); };
 
-                    FileStream fileStream = new FileStream(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + fixedTitle + ".mp3", FileMode.Create);
+                    var fileStream = new FileStream(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + fixedTitle + ".mp3", FileMode.Create);
 
                     ffMpeg.LogReceived += async (ss, log) =>
                     {
                         if (!log.Data.StartsWith("video:0kB")) return;
 
-                        Invoke(new MethodInvoker(() =>
-                        {
-                            selectedItem.DownloadStatus = YoutubeListView.AudioItem.DownloadStatuses.Completed;
-                        }));
+                        Invoke(new MethodInvoker(() => { selectedItem.DownloadStatus = YoutubeListView.AudioItem.DownloadStatuses.Completed; }));
 
                         await Task.Delay(1000);
                         fileStream.Close();
+                        File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + fixedTitle + ".mp4");
                     };
 
                     new Thread(() => ffMpeg.ConvertMedia(
@@ -104,14 +99,13 @@ namespace YouTubeDownloader.UI
                         "mp4",
                         fileStream,
                         "mp3",
-                        new ConvertSettings { AudioCodec = "libmp3lame" }
-                        )).Start(); 
+                        new ConvertSettings { AudioCodec = "libmp3lame", CustomOutputArgs = "-q:a 0" }
+                        )).Start();
                 };
 
-                var highestQualityAvailable = selectedItem._Audio.GetHighestQualityTuple();
+                Tuple<FileFormat, AudioBitrate> highestQualityAvailable = selectedItem._Audio.GetHighestQualityTuple();
                 youtubeDownloader.DownloadAudioAsync(selectedItem._Audio, highestQualityAvailable.Item1, highestQualityAvailable.Item2, Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + fixedTitle + ".mp4");
             }
         }
-
     }
 }

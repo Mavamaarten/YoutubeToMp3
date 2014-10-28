@@ -58,13 +58,13 @@ namespace YouTube
                     if (!stream.Contains("url=")) continue;
                     if (!stream.Contains("itag=")) continue;
 
-                    string formatString = Uri.UnescapeDataString(parseFieldFromQueryString("type", stream));
-                    if(!isAudio(formatString)) continue;
+                    string formatString = Uri.UnescapeDataString(ParseFieldFromQueryString("type", stream));
+                    if(!IsAudio(formatString)) continue;
 
-                    string videoURL = Uri.UnescapeDataString(parseFieldFromQueryString("url", stream));
-                    string itag = Uri.UnescapeDataString(parseFieldFromQueryString("itag", stream));
-                    AudioBitrate bitrate = parseBitrate(itag);
-                    FileFormat format = parseFormat(formatString);
+                    string videoURL = Uri.UnescapeDataString(ParseFieldFromQueryString("url", stream));
+                    string itag = Uri.UnescapeDataString(ParseFieldFromQueryString("itag", stream));
+                    AudioBitrate bitrate = ParseBitrate(itag);
+                    FileFormat format = ParseFormat(formatString);
 
                     Tuple<FileFormat, AudioBitrate> qualityTuple = Tuple.Create(format, bitrate);
                     if(!availableQualities.ContainsKey(qualityTuple)) availableQualities.Add(qualityTuple, videoURL);
@@ -104,7 +104,7 @@ namespace YouTube
             }
         }
 
-        private static string parseFieldFromQueryString(string field, string input)
+        private static string ParseFieldFromQueryString(string field, string input)
         {
             string result = input.Split(new[] { field + "=" }, StringSplitOptions.None)[1];
             if (result.Contains("&")) result = result.Split('&')[0];
@@ -112,7 +112,7 @@ namespace YouTube
             return result;
         }
 
-        private static FileFormat parseFormat(string formatString)
+        private static FileFormat ParseFormat(string formatString)
         {
             switch (formatString.ToUpper().Split('/')[1].Split(';')[0])
             {
@@ -126,7 +126,7 @@ namespace YouTube
             }
         }
 
-        private static AudioBitrate parseBitrate(string itag)
+        private static AudioBitrate ParseBitrate(string itag)
         {
             switch (itag)
             {
@@ -144,7 +144,7 @@ namespace YouTube
             }
         }
 
-        private static bool isAudio(string formatString)
+        private static bool IsAudio(string formatString)
         {
             switch (formatString.ToLower().Split('/')[0])
             {
