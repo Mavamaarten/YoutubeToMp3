@@ -420,19 +420,19 @@ namespace YouTubeDownloader.UI.Controls
                         e.Graphics.DrawString(_Audio.URL, new Font("Segoe UI", 10), new SolidBrush(Color.FromArgb(125, 125, 125)), new Rectangle(100, 34, Width - 142, 16), new StringFormat { Trimming = StringTrimming.EllipsisCharacter });
                         break;
                     case DownloadStatuses.Downloading:
-                        e.Graphics.DrawImage(Resources.downloading, new Point(100, 34));
+                        e.Graphics.DrawImage(Resources.downloading, new Point(100, 35));
                         e.Graphics.DrawString(String.Format("Downloading... {0}% (Step 1 of 2)", DownloadProgress * 2), new Font("Segoe UI", 10), new SolidBrush(Color.FromArgb(180, 180, 180)), new Point(120, 33));
                         break;
                     case DownloadStatuses.Converting:
-                        e.Graphics.DrawImage(Resources.converting, new Point(100, 34));
+                        e.Graphics.DrawImage(Resources.converting, new Point(100, 35));
                         e.Graphics.DrawString("Converting... (Step 2 of 2)", new Font("Segoe UI", 10), new SolidBrush(Color.FromArgb(180, 180, 180)), new Point(120, 33));
                         break;
                     case DownloadStatuses.Completed:
-                        e.Graphics.DrawImage(Resources.done, new Point(100, 34));
+                        e.Graphics.DrawImage(Resources.done, new Point(100, 35));
                         e.Graphics.DrawString(_Audio.URL, new Font("Segoe UI", 10), new SolidBrush(Color.FromArgb(125, 125, 125)), new Rectangle(120, 34, Width - 162, 16), new StringFormat { Trimming = StringTrimming.EllipsisCharacter });
                         break;
                     case DownloadStatuses.Error:
-                        e.Graphics.DrawImage(Resources.error, new Point(100, 34));
+                        e.Graphics.DrawImage(Resources.error, new Point(100, 35));
                         e.Graphics.DrawString(String.Format("{0} - failed", _Audio.URL), new Font("Segoe UI", 10), new SolidBrush(Color.FromArgb(125, 125, 125)), new Rectangle(120, 34, Width - 162, 16), new StringFormat { Trimming = StringTrimming.EllipsisCharacter });
                         break;
                 }
