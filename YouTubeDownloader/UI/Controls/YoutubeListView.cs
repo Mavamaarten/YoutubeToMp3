@@ -39,7 +39,8 @@ namespace YouTubeDownloader.UI.Controls
             {
                 Margin = new Padding(7, 10, 7, 4),
                 ContextMenuStrip = ContextMenuStrip,
-                DownloadStatus = AudioItem.DownloadStatuses.NotDownloaded
+                DownloadStatus = AudioItem.DownloadStatuses.NotDownloaded,
+                Checked = true
             };
 
             Item.MouseUp += onItemMouseUp;
@@ -77,12 +78,12 @@ namespace YouTubeDownloader.UI.Controls
             return Controls.OfType<AudioItem>().Where(C => (C).Checked).ToList();
         }
 
-        public List<AudioInformation> SelectedVideos()
+        public IEnumerable<AudioInformation> SelectedVideos()
         {
             return (from C in Controls.OfType<AudioItem>() where (C).Checked select (C)._Audio).ToList();
         }
 
-        public List<AudioItem> Items()
+        private List<AudioItem> Items()
         {
             return Controls.OfType<AudioItem>().ToList();
         }
