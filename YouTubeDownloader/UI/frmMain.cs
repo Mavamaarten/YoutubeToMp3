@@ -143,6 +143,7 @@ namespace YouTubeDownloader.UI
 
                         await Task.Delay(1000);
                         fileStream.Close();
+                        File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + fixedTitle + ".mp4");
                     };
 
                     new Thread(() => ffMpeg.ConvertMedia(
@@ -150,44 +151,12 @@ namespace YouTubeDownloader.UI
                         "mp4",
                         fileStream,
                         "mp3",
-                        new ConvertSettings { AudioCodec = "libmp3lame" }
+                        new ConvertSettings { AudioCodec = "libmp3lame", CustomOutputArgs = "-q:a 0" }
                         )).Start(); 
                 };
 
                 var highestQualityAvailable = selectedItem._Audio.GetHighestQualityTuple();
                 youtubeDownloader.DownloadAudioAsync(selectedItem._Audio, highestQualityAvailable.Item1, highestQualityAvailable.Item2, Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + fixedTitle + ".mp4");
-            }
-        }
-
-        class ValueObserver<T> : IObserver<T>
-        {
-            private readonly Action<T> _actionOnNext;
-            private readonly Action<Exception> _actionOnException;
-            private readonly Action _actionOnCompleted;
-
-            public ValueObserver(Action<T> actionOnNext = null, Action<Exception> actionOnException = null, Action actionOncompleted = null)
-            {
-                _actionOnNext = actionOnNext;
-                _actionOnException = actionOnException;
-                _actionOnCompleted = actionOncompleted;
-            }
-
-            public void OnNext(T value)
-            {
-                if (_actionOnNext != null)
-                    _actionOnNext(value);
-            }
-
-            public void OnError(Exception error)
-            {
-                if (_actionOnException != null)
-                    _actionOnException(error);
-            }
-
-            public void OnCompleted()
-            {
-                if (_actionOnCompleted != null)
-                    _actionOnCompleted();
             }
         }
     }
