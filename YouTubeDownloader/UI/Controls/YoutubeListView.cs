@@ -33,7 +33,21 @@ namespace YouTubeDownloader.UI.Controls
             if (((ContextMenuStrip)sender).SourceControl == this) e.Cancel = true;
         }
 
-        public void AddItem(AudioInformation _Audio)
+        public void Sort()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(Sort));
+                return;
+            }
+
+            var sortedControls = new List<AudioItem>(Controls.OfType<AudioItem>());
+            sortedControls.Sort();
+            foreach (var control in sortedControls)
+                control.SendToBack();
+        }
+
+        public AudioItem AddItem(AudioInformation _Audio)
         {
             AudioItem Item = new AudioItem(_Audio)
             {
@@ -42,7 +56,7 @@ namespace YouTubeDownloader.UI.Controls
                 DownloadStatus = AudioItem.DownloadStatuses.NotDownloaded,
                 Checked = true
             };
-
+            
             Item.MouseUp += onItemMouseUp;
             Item.MouseDown += onItemMouseDown;
 
@@ -50,7 +64,11 @@ namespace YouTubeDownloader.UI.Controls
             {
                 Controls.Add(Item);
                 OnResize(null);
+
+                Sort();
             }));
+
+            return Item;
         }
 
         public void RemoveItem(AudioInformation _Audio)
@@ -188,7 +206,7 @@ namespace YouTubeDownloader.UI.Controls
             }
         }
 
-        public sealed class AudioItem : Control
+        public sealed class AudioItem : Control, IComparable<AudioItem>
         {
 
             private enum MouseStates
@@ -419,6 +437,11 @@ namespace YouTubeDownloader.UI.Controls
                         break;
                 }
 
+            }
+
+            public int CompareTo(AudioItem other)
+            {
+                return _Audio.CompareTo(other._Audio);
             }
         }
 
