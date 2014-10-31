@@ -6,6 +6,8 @@ Anyways, this is a YouTube to mp3 converter I wrote. The UI has the main focus h
 Only the audio is downloaded, no bandwidth is wasted on downloading the video you're discarding during conversion.
 The .mp4 is converted to .mp3 using ffmpeg.
 
+![Screenshot](http://i.imgur.com/7Jfg6Cs.png)
+
 #Features
 - Nice UI
 - Only downloads audio, no video
